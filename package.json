@@ -1,0 +1,16 @@
+{
+  "name": "graphql-react-event-booking",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": "https://github.com/mihalichpalich/graphql-react-event-booking.git",
+  "author": "mihalichpalich <pavlovtfspb@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4"
+  }
+}
