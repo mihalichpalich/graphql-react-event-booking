@@ -1,0 +1,7 @@
+{
+  "env": {
+    "MONGO_USER": "miklasfafara",
+    "MONGO_PASSWORD": "7455718",
+    "MONGO_DB": "graphql-booking"
+  }
+}

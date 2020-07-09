@@ -2,10 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const {graphqlHTTP} = require('express-graphql');
 const {buildSchema} = require('graphql');
+const mongoose = require('mongoose');
+
+const Event = require('./models/event');
 
 const app = express();
-
-const events = [];
 
 app.use(bodyParser.json());
 
@@ -44,27 +45,48 @@ app.use('/graphql', graphqlHTTP({
         }
     `),
     rootValue: {
-        events: () => { //имя resolve должно совпадать с именем типа
-            return events;
+        events: () => { //имя resolve ф-ии должно совпадать с именем типа и она всегда должна что-то возвращать
+            return Event.find().then(events => {
+                return events.map(event => {
+                    return {...event._doc};
+                })
+            }).catch(err => {
+                throw err
+            });
         },
-        createEvent: (args) => {
-            const event = {
-                _id: Math.random().toString(),
+        createEvent: args => {
+            const event = new Event({
                 title: args.eventInput.title,
                 description: args.eventInput.description,
                 price: +args.eventInput.price, //"+" переводит строку в число
-                date: args.eventInput.date
-            };
-            events.push(event);
-            return event;
+                date: new Date(args.eventInput.date)
+            });
+            return event.save().then(res => {
+                console.log(res);
+                return {...res._doc}
+            }).catch(err => {
+                console.log(err);
+                throw err;
+            });
         }
     },
     graphiql: true
 }));
 
-app.listen(process.env.PORT || 3000, function (err) {
-    if (err) {
-        return console.log(err)
+mongoose.connect(
+    `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.onpgf.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
     }
-    console.log('Server run');
+).then(() => {
+    app.listen(process.env.PORT || 3000, function (err) {
+        if (err) {
+            return console.log(err)
+        }
+        console.log('Server run');
+    });
+}).catch(err => {
+    console.log(err);
 });
+
