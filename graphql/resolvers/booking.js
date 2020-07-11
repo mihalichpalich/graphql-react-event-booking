@@ -3,7 +3,11 @@ const Booking = require('../../models/booking');
 const {transformBooking, transformEvent} = require('./merge');
 
 module.exports = {
-    bookings: async () => {
+    bookings: async (req) => {
+        if (!req.isAuth) {
+            throw new Error('Unauthenticated user!')
+        }
+
         try {
             const bookings = await Booking.find();
             return bookings.map(booking => {
@@ -13,17 +17,25 @@ module.exports = {
             throw err
         }
     },
-    bookEvent: async args => {
+    bookEvent: async (args, req) => {
+        if (!req.isAuth) {
+            throw new Error('Unauthenticated user!')
+        }
+
         const fetchedEvent = await Event.findOne({_id: args.eventId});
         const booking = new Booking({
-            user: '5f0721d8351c4b37fca99f8e',
+            user: req.userId,
             event: fetchedEvent
         });
         const result = await booking.save();
 
         return transformBooking(result)
     },
-    cancelBooking: async args => {
+    cancelBooking: async (args, req) => {
+        if (!req.isAuth) {
+            throw new Error('Unauthenticated user!')
+        }
+
         try {
             const booking = await Booking.findById(args.bookingId).populate('event');
             const event = transformEvent(booking._doc.event);

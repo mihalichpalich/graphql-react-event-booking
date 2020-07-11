@@ -2,6 +2,7 @@
   "env": {
     "MONGO_USER": "miklasfafara",
     "MONGO_PASSWORD": "7455718",
-    "MONGO_DB": "graphql-booking"
+    "MONGO_DB": "graphql-booking",
+    "JWT_SECRET_KEY": "seSC8n{VhVf4fieFHB"
   }
 }
